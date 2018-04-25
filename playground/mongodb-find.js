@@ -20,10 +20,14 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', (err, client) => {
   // }).count().then((amount) => {
   //   console.log(amount);
   // });
-  db.collection('Users').find({
+  db.collection('Users').deleteMany({
     name: 'BI'
-  }).toArray().then((amount) => {
-    console.log(amount);
+  }).then((data) => {
+    if (data.deletedCount > 0) {
+      console.log('Data has been succesfully deleted');
+    } else {
+      console.log('Data has been not been found');
+    }
   })
   client.close();
 });
