@@ -1,4 +1,7 @@
-const {MongoClient, ObjectID} = require('mongodb');
+const {
+  MongoClient,
+  ObjectID
+} = require('mongodb');
 
 console.log('Connecting to MongoDB server...');
 
