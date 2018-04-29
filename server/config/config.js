@@ -1,18 +1,16 @@
 var mongoose = require('mongoose');
 
-
 var env = process.env.NODE_ENV || 'development';
+console.log(`******* ${env} *******`);
 var urlMongoDB;
-if (env === 'development') {
-  process.env.PORT = 3000;
-  urlMongoDB = "mongodb://localhost:27017/TodoApp";
+if (env === 'production') {
+  urlMongoDB = "mongodb://admin:admin@ds117109.mlab.com:17109/todo-node";
 } else if (env === 'test') {
   process.env.PORT = 3000;
   urlMongoDB = "mongodb://localhost:27017/TodoAppTest";
 } else {
-  urlMongoDB = "mongodb://admin:admin@ds117109.mlab.com:17109/todo-node";
+  urlMongoDB = "mongodb://localhost:27017/TodoApp";
 }
-
 
 mongoose.Promise = global.Promise;
 
