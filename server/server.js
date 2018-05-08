@@ -3,6 +3,7 @@ require('./config/config')
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
+const bcrypt = require('bcryptjs');
 
 const {
   ObjectID
@@ -90,23 +91,17 @@ app.patch('/todos/:id', (req, res) => {
     body.completedAt = new Date().getTime();
   } else {
     body.completed = false;
-    body.completed = null;
+    body.completedAt = null;
   }
 
-  Todo.findByIdAndUpdate(id, {
-    $set: body
-  }, {
-    new: true
-  }).then((todo) => {
+  Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
     if (!todo) {
       return res.status(404).send();
     }
 
-    res.send({
-      todo
-    });
+    res.send({todo});
   }).catch((e) => {
-    return res.status(400).send();
+    res.status(400).send();
   })
 });
 
@@ -123,6 +118,18 @@ app.post('/users', (req, res) => {
   })
 });
 
+//POST /users/login
+app.post('/users/login', (req, res) => {
+  var userData = _.pick(req.body, ['email', 'password']);
+
+  User.findByCredentials(userData.email, userData.password).then((user) => {
+    return user.generateAuthToken().then((token) => {
+      res.header('x-auth', token).send(user);
+    });
+  }).catch((e) => {
+    res.status(400).send();
+  });
+});
 
 app.get('/users/me', auth, (req, res) => {
   res.send(req.user);
