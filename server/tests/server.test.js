@@ -257,7 +257,7 @@ describe('POST /users', () => {
   });
 
   it('should not create user if email is in use', (done) => {
-    var email = 'andrew@example.com';
+    var email = 'user1seed@example.com';
     var password = '123mnb!';
 
     request(app)
@@ -269,4 +269,56 @@ describe('POST /users', () => {
     })
     .end(done);
   });
+});
+
+describe('POST /users/login', () => {
+  it('should login user and return auth token', (done) => {
+    request(app)
+    .post('/users/login')
+    .send({
+      email: users[1].email,
+      password: users[1].password
+    })
+    .expect(200)
+    .expect((res) => {
+      expect(res.headers['x-auth']).toExist();
+    })
+    .end((err, res) => {
+      if (err) {
+        return done(err);
+      }
+
+      User.findById(users[1]._id).then((user) => {
+        expect(user.tokens[0]).toInclude({
+          access: 'auth',
+          token: res.headers['x-auth']
+        });
+        done()
+      }).catch((e) => done(e));
+    })
+  });
+
+  it('should reject invalid credentials', (done) => {
+    request(app)
+      .post('/users/login')
+      .send({
+        email: users[2].email,
+        password: 'notthepassword'
+      })
+      .expect(400)
+      .expect((res) => {
+        expect(res.headers['x-auth']).toNotExist();
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+
+        User.findById(users[2]._id).then((user) => {
+          expect(user.tokens).toEqual([]);
+          done();
+        }).catch((e) => done(e));
+      })
+  });
+
 });
