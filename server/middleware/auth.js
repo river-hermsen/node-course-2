@@ -1,4 +1,6 @@
-var {User} = require('./../models/user');
+var {
+  User
+} = require('./../models/user');
 
 var auth = (req, res, next) => {
   var token = req.header('x-auth');
@@ -16,4 +18,6 @@ var auth = (req, res, next) => {
   });
 };
 
-module.exports = {auth};
+module.exports = {
+  auth
+};
